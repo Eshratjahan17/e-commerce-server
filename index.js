@@ -10,7 +10,7 @@ app.use(express.json());
 
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.18h9d.mongodb.net/?retryWrites=true&w=majority`;
-console.log(uri);
+
 const client = new MongoClient(uri, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
@@ -20,6 +20,24 @@ async function run(){
   try{
     await client.connect();
     const productsCollection=client.db("e-commerce").collection("products");
+    const airpodsCollection=client.db("e-commerce").collection("airpods");
+    //allCatagory
+app.get("/allcatagory", async (req, res) => {
+  const q = req.query;
+  console.log(q);
+  const cursor = productsCollection.find(q);
+  const result = await cursor.toArray();
+  res.send(result);
+});
+    //allCatagory
+app.get("/airpods", async (req, res) => {
+  const q = req.query;
+  console.log(q);
+  const cursor = airpodsCollection.find(q);
+  const result = await cursor.toArray();
+  res.send(result);
+});
+
   }
   finally{
 
@@ -27,12 +45,7 @@ async function run(){
   console.log("db connected");
 }
 run().catch(console.dir);
-// client.connect((err) => {
-//   const collection = client.db("test").collection("devices");
-//   console.log("db connected");
-//   // perform actions on the collection object
-//   // client.close();
-// });
+
 
 
 app.get("/", (req, res) => {
