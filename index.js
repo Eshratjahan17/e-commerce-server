@@ -21,7 +21,7 @@ async function run(){
     await client.connect();
     const productsCollection=client.db("e-commerce").collection("products");
     const airpodsCollection=client.db("e-commerce").collection("airpods");
-    //allCatagory
+     //allCatagory APi
 app.get("/allcatagory", async (req, res) => {
   const q = req.query;
   console.log(q);
@@ -29,13 +29,20 @@ app.get("/allcatagory", async (req, res) => {
   const result = await cursor.toArray();
   res.send(result);
 });
-    //allCatagory
+ //airpods Api
 app.get("/airpods", async (req, res) => {
   const q = req.query;
   console.log(q);
   const cursor = airpodsCollection.find(q);
   const result = await cursor.toArray();
   res.send(result);
+});
+//Srearch Api
+app.get("/allcatagory/:key", async (req, res) => {
+  let q = { name: { $regex: req.params.key } };
+let cursor=productsCollection.find(q);
+let result= await cursor.toArray();
+ res.send(result);
 });
 
   }
