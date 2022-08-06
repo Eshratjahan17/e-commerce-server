@@ -19,31 +19,51 @@ const client = new MongoClient(uri, {
 async function run(){
   try{
     await client.connect();
-    const productsCollection=client.db("e-commerce").collection("products");
-    const airpodsCollection=client.db("e-commerce").collection("airpods");
-     //allCatagory APi
-app.get("/allcatagory", async (req, res) => {
-  const q = req.query;
-  console.log(q);
-  const cursor = productsCollection.find(q);
-  const result = await cursor.toArray();
-  res.send(result);
-});
- //airpods Api
-app.get("/airpods", async (req, res) => {
-  const q = req.query;
-  console.log(q);
-  const cursor = airpodsCollection.find(q);
-  const result = await cursor.toArray();
-  res.send(result);
-});
-//Srearch Api
-app.get("/allcatagory/:key", async (req, res) => {
-  let q = { name: { $regex: req.params.key } };
-let cursor=productsCollection.find(q);
-let result= await cursor.toArray();
- res.send(result);
-});
+    const productsCollection = client.db("e-commerce").collection("products");
+    const airpodsCollection = client.db("e-commerce").collection("airpods");
+    //allCatagory APi
+    app.get("/allcatagory", async (req, res) => {
+      const page=parseInt(req.query.page);
+      const size=parseInt(req.query.size);
+      console.log(page,size);
+      const query={};
+      const cursor = productsCollection.find(query);
+      console.log(query);
+      let products;
+      if(page || size){
+        products = await cursor.skip(page*size).limit(size).toArray();
+
+      }
+      else{
+        
+         products = await cursor.toArray();
+
+      }
+    
+      
+      res.send(products);
+    });
+    //airpods Api
+    app.get("/airpods", async (req, res) => {
+      const q = req.query;
+      console.log(q);
+      const cursor = airpodsCollection.find(q);
+      const result = await cursor.toArray();
+      res.send(result);
+    });
+    //Srearch Api
+    app.get("/allcatagory/:key", async (req, res) => {
+      let q = { name: { $regex: req.params.key } };
+      let cursor = productsCollection.find(q);
+      let result = await cursor.toArray();
+      res.send(result);
+    });
+    //Count Api
+    app.get('/productCount',async(req,res)=>{
+     
+      const count = await productsCollection.estimatedDocumentCount();
+      res.send({ count });
+    })
 
   }
   finally{
