@@ -1,7 +1,7 @@
 const express = require("express");
 const cors = require('cors');
 const app = express();
-const { MongoClient, ServerApiVersion } = require("mongodb");
+const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 const port =process.env.PORT||5000;
 require("dotenv").config();
 app.use(cors());
@@ -21,6 +21,7 @@ async function run(){
     await client.connect();
     const productsCollection = client.db("e-commerce").collection("products");
     const airpodsCollection = client.db("e-commerce").collection("airpods");
+    const catagoryCollection = client.db("e-commerce").collection("catagories");
     //allCatagory APi
     app.get("/allcatagory", async (req, res) => {
       const page=parseInt(req.query.page);
@@ -43,11 +44,26 @@ async function run(){
       
       res.send(products);
     });
+    //product details API
+    app.get("/allcatagory/:id",async(req,res)=>{
+      const id=req.params.id;
+      const query={_id:ObjectId(id)};
+      const product = await productsCollection.findOne(query);
+      res.send(product);
+        });
     //airpods Api
     app.get("/airpods", async (req, res) => {
       const q = req.query;
       console.log(q);
       const cursor = airpodsCollection.find(q);
+      const result = await cursor.toArray();
+      res.send(result);
+    });
+    //catagories Api
+    app.get("/catagories", async (req, res) => {
+      const q = {};
+      console.log(q);
+      const cursor = catagoryCollection.find(q);
       const result = await cursor.toArray();
       res.send(result);
     });
